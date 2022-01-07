@@ -135,11 +135,21 @@ export class Alerts extends Component {
             });
         };
 
+        let getMax;
+        getMax = (arr, prop) => {
+            var max;
+            for (var i=0 ; i<arr.length ; i++) {
+                if (max == null || parseInt(arr[i][prop]) > parseInt(max[prop]))
+                    max = arr[i];
+            }
+            return max;
+        };
+
         let onSubmit;
         onSubmit = e => {
             e.preventDefault();
             const domain_name = this.state.domainName;
-            const rtir = this.inputRtirRef.current.value;
+            const rtir = this.inputRtirRef.current.value ? this.inputRtirRef.current.value : getMax(this.props.sites, "rtir").rtir+1;
             const expiry = this.state.day;
             const ip_monitoring = this.ipMonitoringRef.current.checked;
             const content_monitoring = this.webContentMonitoringRef.current.checked;
@@ -170,9 +180,9 @@ export class Alerts extends Component {
                                         <Col sm="8">
                                             {this.state.domainName}
                                         </Col>
-                                        <Form.Label column sm="4">RTIR</Form.Label>
+                                        <Form.Label column sm="4">Ticket ID</Form.Label>
                                         <Col sm="8">
-                                            <Form.Control required ref={this.inputRtirRef} size="md"
+                                            <Form.Control ref={this.inputRtirRef} size="md"
                                                           type="number" placeholder="number"/>
                                         </Col>
                                         <Form.Label column sm="4">Expiry Date</Form.Label>
@@ -429,9 +439,10 @@ export class Alerts extends Component {
                                 <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Fuzzer</th>
                                     <th>Twisted DNS</th>
-                                    <th>Related To</th>
+                                    <th>Corporate Keyword</th>
+                                    <th>Corporate DNS</th>
+                                    <th>Fuzzer</th>
                                     <th>Created At</th>
                                     <th/>
                                 </tr>
@@ -442,9 +453,10 @@ export class Alerts extends Component {
                                         return (
                                             <tr key={alert.id}>
                                                 <td><h5>#{alert.id}</h5></td>
-                                                <td>{alert.dns_twisted.fuzzer}</td>
                                                 <td>{alert.dns_twisted.domain_name}</td>
-                                                <td>{alert.dns_twisted.dns_monitored.domain_name}</td>
+                                                <td>{alert.dns_twisted.keyword_monitored ? alert.dns_twisted.keyword_monitored.name : "-"}</td>
+                                                <td>{alert.dns_twisted.dns_monitored ? alert.dns_twisted.dns_monitored.domain_name : "-"}</td>
+                                                <td>{alert.dns_twisted.fuzzer ? alert.dns_twisted.fuzzer : "-"}</td>
                                                 <td>{(new Date(alert.created_at)).toLocaleString()}</td>
                                                 <td className="text-right" style={{whiteSpace: 'nowrap'}}>
                                                     <button onClick={() => {
